@@ -76,7 +76,7 @@ class DeleteScreamButton extends Component {
 						<Button onClick={this.handleClose} color="primary">
 							Cancel
 						</Button>
-						<Button onClick={this.deleteScream} color="secondary">
+						<Button onClick={this.handleDelete} color="secondary">
 							Delete
 						</Button>
 					</DialogActions>
