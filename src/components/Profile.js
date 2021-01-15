@@ -9,8 +9,6 @@ import Button from "@material-ui/core/Button";
 import MuiLink from "@material-ui/core/Link";
 import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Tooltip from "@material-ui/core/Tooltip";
 
 // Icons
 import LocationOn from "@material-ui/icons/LocationOn";
@@ -25,8 +23,10 @@ import { logoutUser, uploadImage } from "../redux/actions/userActions";
 
 // Components
 import EditDetails from "./EditDetails";
+import CustomButton from "../utils/CustomButton";
 
 const styles = (theme) => ({
+	...theme.styles,
 	paper: {
 		padding: 20,
 	},
@@ -126,17 +126,13 @@ class Profile extends Component {
 								onChange={this.handleImageChange}
 							/>
 
-							<Tooltip
-								title="Edit profile picture"
-								placement="top"
+							<CustomButton
+								tip="Edit profile picture"
+								onClick={this.handleEditPicture}
+								btnClassName="button"
 							>
-								<IconButton
-									onClick={this.handleEditPicture}
-									className="button"
-								>
-									<EditIcon color="primary" />
-								</IconButton>
-							</Tooltip>
+								<EditIcon color="primary" />
+							</CustomButton>
 						</div>
 
 						<hr />
@@ -191,11 +187,9 @@ class Profile extends Component {
 							</span>
 						</div>
 
-						<Tooltip title="Log Out" placement="top">
-							<IconButton onClick={this.handleLogout}>
-								<KeyboardReturn color="primary" />
-							</IconButton>
-						</Tooltip>
+						<CustomButton tip="Log Out" onClick={this.handleLogout}>
+							<KeyboardReturn color="primary" />
+						</CustomButton>
 
 						<EditDetails />
 					</div>

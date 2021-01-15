@@ -3,8 +3,6 @@ import PropTypes from "prop-types";
 
 // material-ui
 import withStyles from "@material-ui/core/styles/withStyles";
-import Tooltip from "@material-ui/core/Tooltip";
-import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
@@ -18,6 +16,9 @@ import EditIcon from "@material-ui/icons/Edit";
 // Redux
 import { connect } from "react-redux";
 import { editUserDetails } from "../redux/actions/userActions";
+
+// Components
+import CustomButton from "../utils/CustomButton";
 
 const styles = (theme) => ({
 	...theme.styles,
@@ -82,14 +83,13 @@ class EditDetails extends Component {
 		const { classes } = this.props;
 		return (
 			<>
-				<Tooltip title="Edit details" placement="top">
-					<IconButton
-						onClick={this.handleOpen}
-						className={classes.editButton}
-					>
-						<EditIcon color="primary" />
-					</IconButton>
-				</Tooltip>
+				<CustomButton
+					tip="Edit details"
+					onClick={this.handleOpen}
+					btnClassName={classes.editButton}
+				>
+					<EditIcon color="primary" />
+				</CustomButton>
 
 				<Dialog
 					open={this.state.open}
