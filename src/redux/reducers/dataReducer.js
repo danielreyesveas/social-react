@@ -1,8 +1,10 @@
 import {
 	SET_SCREAMS,
 	SET_SCREAM,
+	POST_SCREAM,
 	LIKE_SCREAM,
 	UNLIKE_SCREAM,
+	COMMENT_SCREAM,
 	DELETE_SCREAM,
 	LOADING_DATA,
 } from "../types";
@@ -28,7 +30,7 @@ export default function (state = initialState, action) {
 				screams: action.payload,
 				loading: false,
 			};
-		case SET_SCREAMS:
+		case SET_SCREAM:
 			return {
 				...state,
 				scream: action.payload,
@@ -40,6 +42,9 @@ export default function (state = initialState, action) {
 				(scream) => scream.screamId === action.payload.screamId
 			);
 			state.screams[index] = action.payload;
+			if (state.scream.screamId === action.payload.screamId) {
+				state.scream = action.payload;
+			}
 			return {
 				...state,
 			};
@@ -50,6 +55,19 @@ export default function (state = initialState, action) {
 			state.screams.splice(index, 1);
 			return {
 				...state,
+			};
+		case POST_SCREAM:
+			return {
+				...state,
+				screams: [action.payload, ...state.screams],
+			};
+		case COMMENT_SCREAM:
+			return {
+				...state,
+				scream: {
+					...state.scream,
+					comments: [action.payload, ...state.scream.comments],
+				},
 			};
 		default:
 			return state;

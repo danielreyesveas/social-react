@@ -19,59 +19,15 @@ import KeyboardReturn from "@material-ui/icons/KeyboardReturn";
 
 // Redux
 import { connect } from "react-redux";
-import { logoutUser, uploadImage } from "../redux/actions/userActions";
+import { logoutUser, uploadImage } from "../../redux/actions/userActions";
 
 // Components
 import EditDetails from "./EditDetails";
-import CustomButton from "../utils/CustomButton";
+import CustomButton from "../../utils/CustomButton";
+import ProfileSkeleton from "../../utils/ProfileSkeleton";
 
 const styles = (theme) => ({
 	...theme.styles,
-	paper: {
-		padding: 20,
-	},
-	profile: {
-		"& .image-wrapper": {
-			textAlign: "center",
-			position: "relative",
-			"& button": {
-				position: "absolute",
-				top: "80%",
-				left: "70%",
-			},
-		},
-		"& .profile-image": {
-			width: 200,
-			height: 200,
-			objectFit: "cover",
-			maxWidth: "100%",
-			borderRadius: "50%",
-		},
-		"& .profile-details": {
-			textAlign: "center",
-			"& span, svg": {
-				verticalAlign: "middle",
-			},
-			"& a": {
-				color: "#00bcd4",
-			},
-		},
-		"& hr": {
-			border: "none",
-			margin: "0 0 10px 0",
-		},
-		"& svg.button": {
-			"&:hover": {
-				cursor: "pointer",
-			},
-		},
-	},
-	buttons: {
-		textAlign: "center",
-		"& a": {
-			margin: "20px 10px",
-		},
-	},
 });
 
 class Profile extends Component {
@@ -220,7 +176,7 @@ class Profile extends Component {
 				</Paper>
 			)
 		) : (
-			<p>loading...</p>
+			<ProfileSkeleton />
 		);
 
 		return profileMarkup;

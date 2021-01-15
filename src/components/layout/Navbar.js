@@ -8,15 +8,15 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 
 // Icons
-import AddIcon from "@material-ui/icons/Add";
 import HomeIcon from "@material-ui/icons/Home";
-import NotificationsIcon from "@material-ui/icons/Notifications";
 
 // Redux
 import { connect } from "react-redux";
 
 // Components
-import CustomButton from "../utils/CustomButton";
+import CustomButton from "../../utils/CustomButton";
+import PostScream from "../scream/PostScream";
+import Notifications from "./Notifications";
 
 class Navbar extends Component {
 	render() {
@@ -27,9 +27,7 @@ class Navbar extends Component {
 				<Toolbar className="nav-container">
 					{authenticated ? (
 						<>
-							<CustomButton tip="Post a Scream">
-								<AddIcon />
-							</CustomButton>
+							<PostScream />
 
 							<Link to="/">
 								<CustomButton tip="Home">
@@ -37,9 +35,7 @@ class Navbar extends Component {
 								</CustomButton>
 							</Link>
 
-							<CustomButton tip="Notifications">
-								<NotificationsIcon />
-							</CustomButton>
+							<Notifications />
 						</>
 					) : (
 						<>

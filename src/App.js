@@ -13,9 +13,10 @@ import createMuiTheme from "@material-ui/core/styles/createMuiTheme";
 import home from "./pages/home";
 import login from "./pages/login";
 import signup from "./pages/signup";
+import user from "./pages/user";
 
 // Components
-import Navbar from "./components/Navbar";
+import Navbar from "./components/layout/Navbar";
 import AuthRoute from "./utils/AuthRoute";
 
 // Redux
@@ -23,6 +24,9 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import { SET_AUTHENTICATED } from "./redux/types";
 import { logoutUser, getUserData } from "./redux/actions/userActions";
+
+axios.defaults.baseURL =
+	"https://europe-west1-social-reciclatusanimales.cloudfunctions.net/api";
 
 const theme = createMuiTheme(themeFile);
 
@@ -55,6 +59,16 @@ function App() {
 								component={signup}
 								exact
 								path="/signup"
+							/>
+							<Route
+								exact
+								path="/users/:handle"
+								component={user}
+							/>
+							<Route
+								exact
+								path="/users/:handle/scream/:screamId"
+								component={user}
 							/>
 						</Switch>
 					</div>

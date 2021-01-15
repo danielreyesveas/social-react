@@ -12,10 +12,10 @@ import { DeleteOutline } from "@material-ui/icons";
 
 // Redux
 import { connect } from "react-redux";
-import { deleteScream } from "../redux/actions/dataActions";
+import { deleteScream } from "../../redux/actions/dataActions";
 
 // Components
-import CustomButton from "../utils/CustomButton";
+import CustomButton from "../../utils/CustomButton";
 import { Button } from "@material-ui/core";
 
 const styles = {
