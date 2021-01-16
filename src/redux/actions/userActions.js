@@ -38,7 +38,6 @@ export const logoutUser = () => (dispatch) => {
 };
 
 export const getUserData = () => (dispatch) => {
-	console.log(axios.defaults.headers.common);
 	dispatch({ type: LOADING_USER });
 	axios
 		.get("/user")

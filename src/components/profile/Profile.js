@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useRef } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
@@ -30,158 +30,159 @@ const styles = (theme) => ({
 	...theme.styles,
 });
 
-class Profile extends Component {
-	handleImageChange = (event) => {
+const Profile = (props) => {
+	const {
+		classes,
+		user: {
+			credentials: {
+				handle,
+				createdAt,
+				imageUrl,
+				bio,
+				website,
+				location,
+			},
+			authenticated,
+			loading,
+		},
+		logoutUser,
+	} = props;
+
+	const imageButtonRef = useRef(null);
+
+	const handleImageChange = (event) => {
 		const image = event.target.files[0];
 		const formData = new FormData();
 		formData.append("image", image, image.name);
-		this.props.uploadImage(formData);
+		uploadImage(formData);
 	};
 
-	handleEditPicture = () => {
-		const fileInput = document.getElementById("imageInput");
+	const handleEditPicture = () => {
+		const fileInput = imageButtonRef.current;
+		console.log(fileInput);
 		fileInput.click();
 	};
 
-	handleLogout = () => {
-		this.props.logoutUser();
+	const handleLogout = () => {
+		logoutUser();
 	};
 
-	render() {
-		const {
-			classes,
-			user: {
-				credentials: {
-					handle,
-					createdAt,
-					imageUrl,
-					bio,
-					website,
-					location,
-				},
-				authenticated,
-				loading,
-			},
-		} = this.props;
+	let profileMarkup = !loading ? (
+		authenticated ? (
+			<Paper className={classes.paper}>
+				<div className={classes.profile}>
+					<div className="image-wrapper">
+						<img
+							src={imageUrl}
+							alt="profile"
+							className="profile-image"
+						/>
 
-		let profileMarkup = !loading ? (
-			authenticated ? (
-				<Paper className={classes.paper}>
-					<div className={classes.profile}>
-						<div className="image-wrapper">
-							<img
-								src={imageUrl}
-								alt="profile"
-								className="profile-image"
-							/>
+						<input
+							type="file"
+							id="imageInput"
+							ref={imageButtonRef}
+							hidden="hidden"
+							onChange={handleImageChange}
+						/>
 
-							<input
-								type="file"
-								id="imageInput"
-								hidden="hidden"
-								onChange={this.handleImageChange}
-							/>
+						<CustomButton
+							tip="Edit profile picture"
+							onClick={handleEditPicture}
+							btnClassName="button"
+						>
+							<EditIcon color="primary" />
+						</CustomButton>
+					</div>
 
-							<CustomButton
-								tip="Edit profile picture"
-								onClick={this.handleEditPicture}
-								btnClassName="button"
-							>
-								<EditIcon color="primary" />
-							</CustomButton>
-						</div>
+					<hr />
+
+					<div className="profile-details">
+						<MuiLink
+							component={Link}
+							to={`/users/${handle}`}
+							color="primary"
+							variant="h5"
+						>
+							@{handle}
+						</MuiLink>
 
 						<hr />
 
-						<div className="profile-details">
-							<MuiLink
-								component={Link}
-								to={`/users/${handle}`}
-								color="primary"
-								variant="h5"
-							>
-								@{handle}
-							</MuiLink>
+						{bio && <Typography variant="body2">{bio}</Typography>}
 
-							<hr />
+						<hr />
 
-							{bio && (
-								<Typography variant="body2">{bio}</Typography>
-							)}
+						{location && (
+							<>
+								<LocationOn color="primary" />{" "}
+								<span>{location}</span>
+							</>
+						)}
 
-							<hr />
+						<hr />
 
-							{location && (
-								<>
-									<LocationOn color="primary" />{" "}
-									<span>{location}</span>
-								</>
-							)}
+						{website && (
+							<>
+								<LinkIcon color="primary" />
+								<a
+									href={website}
+									target="_blank"
+									rel="noopener noreferrer"
+								>
+									{"  "}
+									{website}
+								</a>
+							</>
+						)}
 
-							<hr />
+						<hr />
 
-							{website && (
-								<>
-									<LinkIcon color="primary" />
-									<a
-										href={website}
-										target="_blank"
-										rel="noopener noreferrer"
-									>
-										{"  "}
-										{website}
-									</a>
-								</>
-							)}
-
-							<hr />
-
-							<CalendarToday color="primary" />
-							{"  "}
-							<span>
-								Joined {dayjs(createdAt).format("MMM YYYY")}
-							</span>
-						</div>
-
-						<CustomButton tip="Log Out" onClick={this.handleLogout}>
-							<KeyboardReturn color="primary" />
-						</CustomButton>
-
-						<EditDetails />
+						<CalendarToday color="primary" />
+						{"  "}
+						<span>
+							Joined {dayjs(createdAt).format("MMM YYYY")}
+						</span>
 					</div>
-				</Paper>
-			) : (
-				<Paper className={classes.paper}>
-					<Typography variant="body2" align="center">
-						No profile found, please login
-					</Typography>
-					<div className={classes.buttons}>
-						<Button
-							variant="contained"
-							color="primary"
-							component={Link}
-							to="/login"
-						>
-							Login
-						</Button>
-						<Button
-							variant="contained"
-							color="secondary"
-							component={Link}
-							to="/signup"
-						>
-							Sign Up
-						</Button>
-					</div>
-				</Paper>
-			)
+
+					<CustomButton tip="Log Out" onClick={handleLogout}>
+						<KeyboardReturn color="primary" />
+					</CustomButton>
+
+					<EditDetails />
+				</div>
+			</Paper>
 		) : (
-			<ProfileSkeleton />
-		);
+			<Paper className={classes.paper}>
+				<Typography variant="body2" align="center">
+					No profile found, please login
+				</Typography>
+				<div className={classes.buttons}>
+					<Button
+						variant="contained"
+						color="primary"
+						component={Link}
+						to="/login"
+					>
+						Login
+					</Button>
+					<Button
+						variant="contained"
+						color="secondary"
+						component={Link}
+						to="/signup"
+					>
+						Sign Up
+					</Button>
+				</div>
+			</Paper>
+		)
+	) : (
+		<ProfileSkeleton />
+	);
 
-		return profileMarkup;
-	}
-}
+	return profileMarkup;
+};
 
 Profile.propTyes = {
 	user: PropTypes.object.isRequired,

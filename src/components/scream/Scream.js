@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -40,77 +40,76 @@ const styles = (theme) => ({
 	},
 });
 
-class Scream extends Component {
-	render() {
-		dayjs.extend(relativeTime);
+dayjs.extend(relativeTime);
 
-		const {
-			classes,
-			scream: {
-				screamId,
-				body,
-				createdAt,
-				userImage,
-				userHandle,
-				likeCount,
-				commentCount,
-			},
-			user: {
-				authenticated,
-				credentials: { handle },
-			},
-		} = this.props;
+const Scream = (props) => {
+	const {
+		classes,
+		scream: {
+			screamId,
+			body,
+			createdAt,
+			userImage,
+			userHandle,
+			likeCount,
+			commentCount,
+		},
+		user: {
+			authenticated,
+			credentials: { handle },
+		},
+		openDialog,
+	} = props;
 
-		const deleteButton =
-			authenticated && userHandle === handle ? (
-				<DeleteScreamButton screamId={screamId} />
-			) : null;
+	const deleteButton =
+		authenticated && userHandle === handle ? (
+			<DeleteScreamButton screamId={screamId} />
+		) : null;
 
-		return (
-			<Card className={classes.card}>
-				<CardMedia
-					image={userImage}
-					title="Profile image"
-					className={classes.image}
+	return (
+		<Card className={classes.card}>
+			<CardMedia
+				image={userImage}
+				title="Profile image"
+				className={classes.image}
+			/>
+			<CardContent className={classes.content}>
+				<Typography
+					variant="h5"
+					component={Link}
+					to={`/users/${userHandle}`}
+					color="primary"
+				>
+					{userHandle}
+				</Typography>
+
+				{deleteButton}
+
+				<Typography variant="body2" color="textSecondary">
+					{dayjs(createdAt).fromNow()}
+				</Typography>
+
+				<Typography variant="body1">{body}</Typography>
+
+				<LikeButton screamId={screamId} />
+
+				<span>{likeCount} likes</span>
+
+				<CustomButton tip="Comments">
+					<ChatIcon color="primary" />
+				</CustomButton>
+
+				<span>{commentCount} comments</span>
+
+				<ScreamDialog
+					dialogScreamId={screamId}
+					dialogUserHandle={userHandle}
+					openDialog={openDialog}
 				/>
-				<CardContent className={classes.content}>
-					<Typography
-						variant="h5"
-						component={Link}
-						to={`/users/${userHandle}`}
-						color="primary"
-					>
-						{userHandle}
-					</Typography>
-
-					{deleteButton}
-
-					<Typography variant="body2" color="textSecondary">
-						{dayjs(createdAt).fromNow()}
-					</Typography>
-
-					<Typography variant="body1">{body}</Typography>
-
-					<LikeButton screamId={screamId} />
-
-					<span>{likeCount} likes</span>
-
-					<CustomButton tip="Comments">
-						<ChatIcon color="primary" />
-					</CustomButton>
-
-					<span>{commentCount} comments</span>
-
-					<ScreamDialog
-						screamId={screamId}
-						userHandle={userHandle}
-						openDialog={this.props.openDialog}
-					/>
-				</CardContent>
-			</Card>
-		);
-	}
-}
+			</CardContent>
+		</Card>
+	);
+};
 
 Scream.propTypes = {
 	user: PropTypes.object.isRequired,

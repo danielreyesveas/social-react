@@ -16,7 +16,7 @@ const initialState = {
 	notifications: [],
 };
 
-export default function (state = initialState, action) {
+const userReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case SET_AUTHENTICATED:
 			return {
@@ -62,4 +62,6 @@ export default function (state = initialState, action) {
 		default:
 			return state;
 	}
-}
+};
+
+export default userReducer;

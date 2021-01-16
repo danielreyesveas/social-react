@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -13,46 +13,42 @@ import CustomButton from "../../utils/CustomButton";
 import { connect } from "react-redux";
 import { likeScream, unlikeScream } from "../../redux/actions/dataActions";
 
-class LikeButton extends Component {
-	likedScream = () => {
+const LikeButton = (props) => {
+	const { user, screamId, likeScream, unlikeScream } = props;
+	const { authenticated } = user;
+
+	const likedScream = () => {
 		return (
-			this.props.user.likes &&
-			this.props.user.likes.find(
-				(like) => like.screamId === this.props.screamId
-			)
+			user.likes && user.likes.find((like) => like.screamId === screamId)
 		);
 	};
 
-	likeScream = () => {
-		this.props.likeScream(this.props.screamId);
+	const handleLikeScream = () => {
+		likeScream(screamId);
 	};
 
-	unlikeScream = () => {
-		this.props.unlikeScream(this.props.screamId);
+	const handleUnlikeScream = () => {
+		unlikeScream(screamId);
 	};
 
-	render() {
-		const { authenticated } = this.props.user;
-
-		const likeButton = !authenticated ? (
-			<Link to="/login">
-				<CustomButton tip="Like">
-					<FavoriteBorderIcon color="primary" />
-				</CustomButton>
-			</Link>
-		) : this.likedScream() ? (
-			<CustomButton tip="Undo like" onClick={this.unlikeScream}>
-				<FavoriteIcon color="primary" />
-			</CustomButton>
-		) : (
-			<CustomButton tip="Like" onClick={this.likeScream}>
+	const likeButton = !authenticated ? (
+		<Link to="/login">
+			<CustomButton tip="Like">
 				<FavoriteBorderIcon color="primary" />
 			</CustomButton>
-		);
+		</Link>
+	) : likedScream() ? (
+		<CustomButton tip="Undo like" onClick={handleUnlikeScream}>
+			<FavoriteIcon color="primary" />
+		</CustomButton>
+	) : (
+		<CustomButton tip="Like" onClick={handleLikeScream}>
+			<FavoriteBorderIcon color="primary" />
+		</CustomButton>
+	);
 
-		return likeButton;
-	}
-}
+	return likeButton;
+};
 
 LikeButton.propTypes = {
 	user: PropTypes.object.isRequired,

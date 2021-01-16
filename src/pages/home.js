@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 
 // material-ui
@@ -13,35 +13,38 @@ import ScreamSkeleton from "../utils/ScreamSkeleton";
 import { connect } from "react-redux";
 import { getScreams } from "../redux/actions/dataActions";
 
-class home extends Component {
-	componentDidMount() {
-		this.props.getScreams();
-	}
+const Home = (props) => {
+	const {
+		data: { screams, loading },
+		getScreams,
+	} = props;
 
-	render() {
-		const { screams, loading } = this.props.data;
-		let recentsScreamsMarkup = loading ? (
-			<ScreamSkeleton />
-		) : (
-			screams.map((scream) => (
-				<Scream key={scream.screamId} scream={scream} />
-			))
-		);
-		return (
-			<Grid container spacing={2}>
-				<Grid item sm={8} xs={12}>
-					{recentsScreamsMarkup}
-				</Grid>
+	useEffect(() => {
+		getScreams();
+	}, [getScreams]);
 
-				<Grid item sm={4} xs={12}>
-					<Profile />
-				</Grid>
+	const recentsScreamsMarkup = loading ? (
+		<ScreamSkeleton />
+	) : (
+		screams.map((scream) => (
+			<Scream key={scream.screamId} scream={scream} />
+		))
+	);
+
+	return (
+		<Grid container spacing={2}>
+			<Grid item sm={8} xs={12}>
+				{recentsScreamsMarkup}
 			</Grid>
-		);
-	}
-}
 
-home.propTypes = {
+			<Grid item sm={4} xs={12}>
+				<Profile />
+			</Grid>
+		</Grid>
+	);
+};
+
+Home.propTypes = {
 	getScreams: PropTypes.func.isRequired,
 	data: PropTypes.object.isRequired,
 };
@@ -54,4 +57,4 @@ const mapActionsToProps = {
 	getScreams,
 };
 
-export default connect(mapStateToProps, mapActionsToProps)(home);
+export default connect(mapStateToProps, mapActionsToProps)(Home);

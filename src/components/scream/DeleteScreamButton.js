@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
 // material-ui
@@ -26,65 +26,51 @@ const styles = {
 	},
 };
 
-class DeleteScreamButton extends Component {
-	state = {
-		open: false,
+const DeleteScreamButton = (props) => {
+	const { classes, screamId, deleteScream } = props;
+
+	const [open, setOpen] = useState(false);
+
+	const handleOpen = () => {
+		setOpen(true);
 	};
 
-	handleOpen = () => {
-		this.setState({
-			open: true,
-		});
+	const handleClose = () => {
+		setOpen(false);
 	};
 
-	handleClose = () => {
-		this.setState({
-			open: false,
-		});
+	const handleDelete = () => {
+		deleteScream(screamId);
+		setOpen(false);
 	};
 
-	handleDelete = () => {
-		this.props.deleteScream(this.props.screamId);
-		this.setState({
-			open: false,
-		});
-	};
+	return (
+		<>
+			<CustomButton
+				tip="Delete Scream"
+				onClick={handleOpen}
+				btnClassName={classes.deleteButton}
+			>
+				<DeleteOutline color="secondary" />
+			</CustomButton>
 
-	render() {
-		const { classes } = this.props;
-		return (
-			<>
-				<CustomButton
-					tip="Delete Scream"
-					onClick={this.handleOpen}
-					btnClassName={classes.deleteButton}
-				>
-					<DeleteOutline color="secondary" />
-				</CustomButton>
+			<Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+				<DialogTitle>
+					Are you sure you want to delete this scream?
+				</DialogTitle>
 
-				<Dialog
-					open={this.state.open}
-					onClose={this.handleClose}
-					fullWidth
-					maxWidth="sm"
-				>
-					<DialogTitle>
-						Are you sure you want to delete this scream?
-					</DialogTitle>
-
-					<DialogActions>
-						<Button onClick={this.handleClose} color="primary">
-							Cancel
-						</Button>
-						<Button onClick={this.handleDelete} color="secondary">
-							Delete
-						</Button>
-					</DialogActions>
-				</Dialog>
-			</>
-		);
-	}
-}
+				<DialogActions>
+					<Button onClick={handleClose} color="primary">
+						Cancel
+					</Button>
+					<Button onClick={handleDelete} color="secondary">
+						Delete
+					</Button>
+				</DialogActions>
+			</Dialog>
+		</>
+	);
+};
 
 DeleteScreamButton.propTypes = {
 	deleteScream: PropTypes.func.isRequired,

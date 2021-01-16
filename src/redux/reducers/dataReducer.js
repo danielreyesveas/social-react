@@ -17,7 +17,7 @@ const initialState = {
 
 let index;
 
-export default function (state = initialState, action) {
+const dataReducer = (state = initialState, action) => {
 	switch (action.type) {
 		case LOADING_DATA:
 			return {
@@ -72,4 +72,6 @@ export default function (state = initialState, action) {
 		default:
 			return state;
 	}
-}
+};
+
+export default dataReducer;

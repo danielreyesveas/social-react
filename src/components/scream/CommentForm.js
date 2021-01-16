@@ -1,8 +1,5 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-
-import dayjs from "dayjs";
 
 // material-ui
 import withStyles from "@material-ui/core/styles/withStyles";
@@ -18,73 +15,67 @@ const styles = (theme) => ({
 	...theme.styles,
 });
 
-class CommentForm extends Component {
-	state = {
-		body: "",
-		errors: {},
-	};
+const CommentForm = (props) => {
+	const { classes, authenticated, screamId, ui, commentScream } = props;
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.ui.errors) {
-			this.setState({
-				errors: nextProps.ui.errors,
-			});
+	const [userDetails, setUserDetails] = useState({
+		body: "",
+	});
+	const [errors, setErrors] = useState({});
+
+	useEffect(() => {
+		if (ui.errors) {
+			setErrors(ui.errors);
 		}
-		if (!nextProps.ui.errors && !nextProps.ui.loading) {
-			this.setState({
+		if (!ui.errors && !ui.loading) {
+			setUserDetails({
 				body: "",
 			});
 		}
-	}
+	}, [ui.errors, ui.loading]);
 
-	handleChange = (event) => {
-		this.setState({
+	const handleChange = (event) => {
+		setUserDetails({
 			[event.target.name]: event.target.value,
 		});
 	};
 
-	handleSubmit = (event) => {
+	const handleSubmit = (event) => {
 		event.preventDefault();
-		this.props.commentScream(this.props.screamId, {
-			body: this.state.body,
-		});
+		commentScream(screamId, userDetails);
 	};
 
-	render() {
-		const { classes, authenticated } = this.props;
-		const errors = this.state.errors;
+	const commentFormMarkup = authenticated ? (
+		<Grid item sm={12} style={{ textAlign: "center" }}>
+			<form onSubmit={handleSubmit}>
+				<TextField
+					name="body"
+					type="text"
+					label="Comment on Scream"
+					error={!!errors.comment}
+					helperText={errors.comment}
+					value={userDetails.body}
+					onChange={handleChange}
+					fullWidth
+					className={classes.textField}
+				/>
 
-		const commentFormMarkup = authenticated ? (
-			<Grid item sm={12} style={{ textAlign: "center" }}>
-				<form onSubmit={this.handleSubmit}>
-					<TextField
-						name="body"
-						type="text"
-						label="Comment on Scream"
-						error={!!errors.comment}
-						helperText={errors.comment}
-						value={this.state.body}
-						onChange={this.handleChange}
-						fullWidth
-						className={classes.textField}
-					/>
+				<Button
+					type="submit"
+					variant="contained"
+					color="primary"
+					className={classes.submitButton}
+				>
+					Submit
+				</Button>
 
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						className={classes.submitButton}
-					>
-						Submit
-					</Button>
+				<hr className={classes.visibleSeparator} />
+			</form>
+		</Grid>
+	) : null;
 
-					<hr className={classes.visibleSeparator} />
-				</form>
-			</Grid>
-		) : null;
-		return commentFormMarkup;
-	}
-}
+	return commentFormMarkup;
+};
 
 CommentForm.propTypes = {
 	ui: PropTypes.object.isRequired,

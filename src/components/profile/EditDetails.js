@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 // material-ui
@@ -27,131 +27,113 @@ const styles = (theme) => ({
 	},
 });
 
-class EditDetails extends Component {
-	state = {
+const EditDetails = (props) => {
+	const { classes, credentials, editUserDetails } = props;
+
+	const [userDetails, setUserDetails] = useState({
 		bio: "",
 		website: "",
 		location: "",
-		open: false,
-	};
+	});
+	const [open, setOpen] = useState(false);
 
-	mapUserDetailsToState = (credentials) => {
-		this.setState({
+	const mapUserDetailsToState = (credentials) => {
+		setUserDetails({
 			bio: credentials.bio ? credentials.bio : "",
 			website: credentials.website ? credentials.website : "",
 			location: credentials.location ? credentials.location : "",
 		});
 	};
 
-	componentDidMount() {
-		const { credentials } = this.props;
-		this.mapUserDetailsToState(credentials);
-	}
+	useEffect(() => {
+		mapUserDetailsToState(credentials);
+	}, [credentials]);
 
-	handleClose = () => {
-		this.setState({
-			open: false,
-		});
+	const handleClose = () => {
+		setOpen(false);
 	};
 
-	handleOpen = () => {
-		const { credentials } = this.props;
-		this.setState({
-			open: true,
-		});
-		this.mapUserDetailsToState(credentials);
+	const handleOpen = () => {
+		setOpen(true);
+		mapUserDetailsToState(credentials);
 	};
 
-	handleChange = (event) => {
-		this.setState({
+	const handleChange = (event) => {
+		setUserDetails({
 			[event.target.name]: event.target.value,
 		});
 	};
 
-	handleSubmit = () => {
-		const userDetails = {
-			bio: this.state.bio,
-			website: this.state.website,
-			location: this.state.location,
-		};
-
-		this.props.editUserDetails(userDetails);
-		this.handleClose();
+	const handleSubmit = () => {
+		editUserDetails(userDetails);
+		handleClose();
 	};
 
-	render() {
-		const { classes } = this.props;
-		return (
-			<>
-				<CustomButton
-					tip="Edit details"
-					onClick={this.handleOpen}
-					btnClassName={classes.editButton}
-				>
-					<EditIcon color="primary" />
-				</CustomButton>
+	return (
+		<>
+			<CustomButton
+				tip="Edit details"
+				onClick={handleOpen}
+				btnClassName={classes.editButton}
+			>
+				<EditIcon color="primary" />
+			</CustomButton>
 
-				<Dialog
-					open={this.state.open}
-					onClose={this.handleClose}
-					fullWidth
-					maxWidth="sm"
-				>
-					<DialogTitle>Edit your details</DialogTitle>
+			<Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+				<DialogTitle>Edit your details</DialogTitle>
 
-					<DialogContent>
-						<form>
-							<TextField
-								name="bio"
-								type="text"
-								label="Bio"
-								multiline
-								rows="3"
-								placeholder="A short bio about yourself."
-								className={classes.textField}
-								value={this.state.bio}
-								onChange={this.handleChange}
-								fullWidth
-							></TextField>
+				<DialogContent>
+					<form>
+						<TextField
+							name="bio"
+							type="text"
+							label="Bio"
+							multiline
+							rows="3"
+							placeholder="A short bio about yourself."
+							className={classes.textField}
+							value={userDetails.bio}
+							onChange={handleChange}
+							fullWidth
+						></TextField>
 
-							<TextField
-								name="website"
-								type="text"
-								label="website"
-								placeholder="Your personal/professional website."
-								className={classes.textField}
-								value={this.state.website}
-								onChange={this.handleChange}
-								fullWidth
-							></TextField>
+						<TextField
+							name="website"
+							type="text"
+							label="website"
+							placeholder="Your personal/professional website."
+							className={classes.textField}
+							value={userDetails.website}
+							onChange={handleChange}
+							fullWidth
+						></TextField>
 
-							<TextField
-								name="location"
-								type="text"
-								label="location"
-								placeholder="Where you live."
-								className={classes.textField}
-								value={this.state.location}
-								onChange={this.handleChange}
-								fullWidth
-							></TextField>
-						</form>
-					</DialogContent>
+						<TextField
+							name="location"
+							type="text"
+							label="location"
+							placeholder="Where you live."
+							className={classes.textField}
+							value={userDetails.location}
+							onChange={handleChange}
+							fullWidth
+						></TextField>
+					</form>
+				</DialogContent>
 
-					<DialogActions>
-						<Button onClick={this.handleClose} color="primary">
-							Cancel
-						</Button>
+				<DialogActions>
+					<Button onClick={handleClose} color="primary">
+						Cancel
+					</Button>
 
-						<Button onClick={this.handleSubmit} color="primary">
-							Save
-						</Button>
-					</DialogActions>
-				</Dialog>
-			</>
-		);
-	}
-}
+					<Button onClick={handleSubmit} color="primary">
+						Save
+					</Button>
+				</DialogActions>
+			</Dialog>
+		</>
+	);
+};
 
 EditDetails.propTypes = {
 	editUserDetails: PropTypes.func.isRequired,

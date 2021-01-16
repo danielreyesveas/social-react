@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
@@ -54,150 +54,155 @@ const styles = (theme) => ({
 	},
 });
 
-class ScreamDialog extends Component {
-	state = {
-		open: false,
-		oldPath: "",
-		newPath: "",
-	};
+const initialPathState = {
+	old: "",
+	current: "",
+};
 
-	componentDidMount() {
-		if (this.props.openDialog) {
-			this.handleOpen();
+const ScreamDialog = (props) => {
+	const {
+		classes,
+		scream: {
+			screamId,
+			body,
+			createdAt,
+			likeCount,
+			comments,
+			commentCount,
+			userImage,
+			userHandle,
+		},
+		dialogScreamId,
+		dialogUserHandle,
+		ui: { loading },
+		openDialog,
+		getScream,
+		clearErrors,
+	} = props;
+
+	const [open, setOpen] = useState(false);
+	const [path, setPath] = useState(initialPathState);
+
+	useEffect(() => {
+		if (!!openDialog) {
+			console.log(openDialog);
+			handleOpen();
 		}
-	}
+		// eslint-disable-next-line
+	}, []);
 
-	handleOpen = () => {
-		let oldPath = window.location.pathname;
+	const handleOpen = () => {
+		let old = window.location.pathname;
+		const current = `/users/${dialogUserHandle}/scream/${dialogScreamId}`;
 
-		const { userHandle, screamId } = this.props;
-		const newPath = `/users/${userHandle}/scream/${screamId}`;
-
-		if (oldPath === newPath) {
-			oldPath = `/users/${userHandle}`;
+		if (old === current) {
+			old = `/users/${dialogUserHandle}`;
 		}
 
-		window.history.pushState(null, null, newPath);
+		window.history.pushState(null, null, current);
 
-		this.setState({ open: true, oldPath, newPath });
-		this.props.getScream(this.props.screamId);
+		setPath({
+			old,
+			current,
+		});
+		setOpen(true);
+		getScream(dialogScreamId);
 	};
 
-	handleClose = () => {
-		window.history.pushState(null, null, this.state.oldPath);
-		this.setState({ open: false });
-		this.props.clearErrors();
+	const handleClose = () => {
+		window.history.pushState(null, null, path.old);
+		setOpen(false);
+		clearErrors();
 	};
 
-	render() {
-		const {
-			classes,
-			scream: {
-				screamId,
-				body,
-				createdAt,
-				likeCount,
-				comments,
-				commentCount,
-				userImage,
-				userHandle,
-			},
-			ui: { loading },
-		} = this.props;
-
-		const dialogMarkup = loading ? (
-			<div className={classes.spinnerDiv}>
-				<CircularProgress size={200} thickness={2} />
-			</div>
-		) : (
-			<Grid container spacing={2}>
-				<Grid item sm={5}>
-					<img
-						src={userImage}
-						alt="Profile"
-						className={classes.profileImage}
-					/>
-				</Grid>
-
-				<Grid item sm={7}>
-					<Typography
-						component={Link}
-						color="primary"
-						variant="h5"
-						to={`/users/${userHandle}`}
-					>
-						@{userHandle}
-					</Typography>
-
-					<hr className={classes.invisibleSeparator} />
-
-					<Typography variant="body2" color="textSecondary">
-						{dayjs(createdAt).format("h:mm a, MMMM DD YYYY")}
-					</Typography>
-
-					<hr className={classes.invisibleSeparator} />
-
-					<Typography variant="body1">{body}</Typography>
-
-					<LikeButton screamId={screamId} />
-
-					<span>{likeCount} likes</span>
-
-					<CustomButton tip="Comments">
-						<ChatIcon color="primary" />
-					</CustomButton>
-
-					<span>{commentCount} comments</span>
-				</Grid>
-
-				<hr className={classes.visibleSeparator} />
-
-				<CommentForm screamId={screamId} />
-
-				<Comments comments={comments} />
+	const dialogMarkup = loading ? (
+		<div className={classes.spinnerDiv}>
+			<CircularProgress size={200} thickness={2} />
+		</div>
+	) : (
+		<Grid container spacing={2}>
+			<Grid item sm={5}>
+				<img
+					src={userImage}
+					alt="Profile"
+					className={classes.profileImage}
+				/>
 			</Grid>
-		);
 
-		return (
-			<>
-				<CustomButton
-					onClick={this.handleOpen}
-					tip="Expand Scream"
-					tipClassName={classes.expandButton}
+			<Grid item sm={7}>
+				<Typography
+					component={Link}
+					color="primary"
+					variant="h5"
+					to={`/users/${userHandle}`}
 				>
-					<VisibilityIcon color="primary" />
+					@{userHandle}
+				</Typography>
+
+				<hr className={classes.invisibleSeparator} />
+
+				<Typography variant="body2" color="textSecondary">
+					{dayjs(createdAt).format("h:mm a, MMMM DD YYYY")}
+				</Typography>
+
+				<hr className={classes.invisibleSeparator} />
+
+				<Typography variant="body1">{body}</Typography>
+
+				<LikeButton screamId={screamId} />
+
+				<span>{likeCount} likes</span>
+
+				<CustomButton tip="Comments">
+					<ChatIcon color="primary" />
 				</CustomButton>
 
-				<Dialog
-					open={this.state.open}
-					onClose={this.handleClose}
-					fullWidth
-					maxWidth="sm"
+				<span>{commentCount} comments</span>
+			</Grid>
+
+			<hr className={classes.visibleSeparator} />
+
+			<CommentForm screamId={screamId} />
+
+			<Comments comments={comments} />
+		</Grid>
+	);
+
+	return (
+		<>
+			<CustomButton
+				onClick={handleOpen}
+				tip="Expand Scream"
+				tipClassName={classes.expandButton}
+			>
+				<VisibilityIcon color="primary" />
+			</CustomButton>
+
+			<Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+				<CustomButton
+					tip="Close"
+					onClick={handleClose}
+					tipClassName={classes.closeButton}
 				>
-					<CustomButton
-						tip="Close"
-						onClick={this.handleClose}
-						tipClassName={classes.closeButton}
-					>
-						<CloseIcon />
-					</CustomButton>
+					<CloseIcon />
+				</CustomButton>
 
-					<DialogTitle>Post a new Scream</DialogTitle>
+				<DialogTitle>Scream</DialogTitle>
 
-					<DialogContent className={classes.dialogContent}>
-						{dialogMarkup}
-					</DialogContent>
-				</Dialog>
-			</>
-		);
-	}
-}
+				<DialogContent className={classes.dialogContent}>
+					{dialogMarkup}
+				</DialogContent>
+			</Dialog>
+		</>
+	);
+};
 
 ScreamDialog.propTypes = {
+	dialogScreamId: PropTypes.string.isRequired,
+	dialogUserHandle: PropTypes.string.isRequired,
+	openDialog: PropTypes.bool,
 	getScream: PropTypes.func.isRequired,
 	clearErrors: PropTypes.func.isRequired,
-	screamId: PropTypes.string.isRequired,
-	userHandle: PropTypes.string.isRequired,
 	scream: PropTypes.object.isRequired,
 	ui: PropTypes.object.isRequired,
 };

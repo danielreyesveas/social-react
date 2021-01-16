@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
@@ -20,132 +20,117 @@ const styles = (theme) => ({
 	...theme.styles,
 });
 
-class login extends Component {
-	constructor() {
-		super();
-		this.state = {
-			email: "",
-			password: "",
-			errors: {},
-		};
-	}
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.ui.errors) {
-			this.setState({ errors: nextProps.ui.errors });
-		}
-	}
+const initialUserData = {
+	email: "",
+	password: "",
+};
 
-	handleChange = (event) => {
-		this.setState({
+const Login = (props) => {
+	const { history, classes, ui, loginUser } = props;
+
+	const [errors, setErrors] = useState({});
+	const [userData, setUserData] = useState(initialUserData);
+
+	useEffect(() => {
+		if (ui.errors) {
+			setErrors(ui.errors);
+		}
+	}, [ui.errors]);
+
+	const handleChange = (event) => {
+		console.log(event.target.name, event.target.value);
+		setUserData({
+			...userData,
 			[event.target.name]: event.target.value,
 		});
 	};
 
-	handleSubmit = (event) => {
+	const handleSubmit = (event) => {
 		event.preventDefault();
-
-		const userData = {
-			email: this.state.email,
-			password: this.state.password,
-		};
-		this.props.loginUser(userData, this.props.history);
+		loginUser(userData, history);
 	};
 
-	render() {
-		const {
-			classes,
-			ui: { loading },
-		} = this.props;
-		const { errors } = this.state;
+	return (
+		<Grid container className={classes.form}>
+			<Grid item sm></Grid>
+			<Grid item sm>
+				<img src={AppIcon} alt="App icon" className={classes.appIcon} />
 
-		return (
-			<Grid container className={classes.form}>
-				<Grid item sm></Grid>
-				<Grid item sm>
-					<img
-						src={AppIcon}
-						alt="App icon"
-						className={classes.appIcon}
+				<Typography variant="h2" className={classes.pageTitle}>
+					Login
+				</Typography>
+
+				<form noValidate onSubmit={handleSubmit}>
+					<TextField
+						className={classes.textField}
+						error={!!errors.email}
+						fullWidth
+						helperText={errors.email}
+						id="email"
+						label="Email"
+						name="email"
+						onChange={handleChange}
+						type="email"
+						value={userData.email}
 					/>
 
-					<Typography variant="h2" className={classes.pageTitle}>
-						Login
-					</Typography>
+					<TextField
+						className={classes.textField}
+						error={!!errors.password}
+						fullWidth
+						helperText={errors.password}
+						id="password"
+						label="Password"
+						name="password"
+						onChange={handleChange}
+						type="password"
+						value={userData.password}
+					/>
 
-					<form noValidate onSubmit={this.handleSubmit}>
-						<TextField
-							className={classes.textField}
-							error={!!errors.email}
-							fullWidth
-							helperText={errors.email}
-							id="email"
-							label="Email"
-							name="email"
-							onChange={this.handleChange}
-							type="email"
-							value={this.state.email}
-						/>
-
-						<TextField
-							className={classes.textField}
-							error={!!errors.password}
-							fullWidth
-							helperText={errors.password}
-							id="password"
-							label="Password"
-							name="password"
-							onChange={this.handleChange}
-							type="password"
-							value={this.state.password}
-						/>
-
-						{errors.general && (
-							<Typography
-								variant="body2"
-								className={classes.customError}
-							>
-								{errors.general}
-							</Typography>
-						)}
-						<Button
-							className={classes.submitButton}
-							color="primary"
-							disabled={loading}
-							type="submit"
-							variant="contained"
+					{errors.general && (
+						<Typography
+							variant="body2"
+							className={classes.customError}
 						>
-							Login
-							{loading && (
-								<CircularProgress
-									className={classes.progress}
-									size={30}
-								/>
-							)}
-						</Button>
+							{errors.general}
+						</Typography>
+					)}
+					<Button
+						className={classes.submitButton}
+						color="primary"
+						disabled={ui.loading}
+						type="submit"
+						variant="contained"
+					>
+						Login
+						{ui.loading && (
+							<CircularProgress
+								className={classes.progress}
+								size={30}
+							/>
+						)}
+					</Button>
 
-						<br />
+					<br />
 
-						<small>
-							Don't have an account? sign up
-							<Link to="/signup"> here</Link>
-						</small>
-					</form>
-				</Grid>
-				<Grid item sm></Grid>
+					<small>
+						Don't have an account? sign up
+						<Link to="/signup"> here</Link>
+					</small>
+				</form>
 			</Grid>
-		);
-	}
-}
+			<Grid item sm></Grid>
+		</Grid>
+	);
+};
 
-login.propTypes = {
+Login.propTypes = {
 	classes: PropTypes.object.isRequired,
 	loginUser: PropTypes.func.isRequired,
-	user: PropTypes.object.isRequired,
 	ui: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = (state) => ({
-	user: state.user,
 	ui: state.ui,
 });
 
@@ -156,4 +141,4 @@ const mapActionsToProps = {
 export default connect(
 	mapStateToProps,
 	mapActionsToProps
-)(withStyles(styles)(login));
+)(withStyles(styles)(Login));
